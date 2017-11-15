@@ -313,6 +313,9 @@ class SmallfileWorkload:
 
         # top of directory tree, default always exists on local fs
         top = join(self.tmp_dir, 'smf')
+        
+        # time for the test to run
+        self.runtime = 0
 
         # file that tells thread when to start running
         self.starting_gate = None
@@ -426,6 +429,7 @@ class SmallfileWorkload:
         s += ' dest_dirs=' + str(self.dest_dirs)
         s += ' network_dir=' + str(self.network_dir)
         s += ' shared=' + str(self.is_shared_dir)
+        s += ' runtime=' + str(self.runtime)
         s += ' record_sz_kb=' + str(self.record_sz_kb)
         s += ' total_sz_kb=' + str(self.total_sz_kb)
         s += ' filesize_distr=' + str(self.filesize_distr)
@@ -699,6 +703,10 @@ class SmallfileWorkload:
             if not self.test_ended():
                 self.end_test()
             return False
+        if self.runtime and self.runtime < self.start_time + time.time():
+            if not self.test_ended():
+                self.end_test()
+            return False
         if self.abort:
             raise Exception('thread ' + str(self.tid)
                             + ' saw abort flag')
@@ -779,8 +787,6 @@ class SmallfileWorkload:
             self.file_dirs[filenum],
             os.sep,
             self.prefix,
-            '_',
-            self.onhost,
             '_',
             self.tid,
             '_',
@@ -1727,10 +1733,8 @@ class Test(unittest_class):
         lastfn = ivk.mk_file_nm(ivk.src_dirs, ivk.iterations)
 
         expectedFn = join(join(self.invok.src_dirs[0], 'd_000'),
-                          ivk.prefix + '_' + 
-                          ivk.onhost + '_' + 
-                          ivk.tid + '_1_' + 
-                          ivk.suffix)
+                          ivk.prefix + '_' + ivk.tid + '_1_'
+                          + ivk.suffix)
         self.assertTrue(fn == expectedFn)
         self.assertTrue(exists(fn))
         self.assertTrue(exists(lastfn))
@@ -1990,7 +1994,7 @@ class Test(unittest_class):
         fn = self.lastFileNameInTest(self.invok.src_dirs)
         expectedFn = os.sep.join([self.invok.src_dirs[0], 'h_001',
                                   'h_000', 'h_001',
-                                  'p_%s_regtest_499_deep_hashed' % self.invok.onhost])
+                                  'p_regtest_499_deep_hashed'])
         self.assertTrue(fn == expectedFn)
         self.assertTrue(exists(fn))
         self.cleanup_files()

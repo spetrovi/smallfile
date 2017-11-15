@@ -45,6 +45,8 @@ def usage(msg):  # call if CLI syntax error or invalid parameter
           dflts.xattr_size)
     print('  --xattr-count non-negative-integer-bytes         (default: %d)' %
           dflts.xattr_count)
+    print('  --runtime positive-integer-seconds               (default: %d)' %
+          dflts.runtime)
     print('  --file-size-distribution exponential             ' +
           '(default: fixed-size)')
     print('  --permute-host-dirs Y|N                          (default: N)')
@@ -155,6 +157,9 @@ for additional help add the parameter "--help" to the command
         elif prm == 'dirs-per-dir':
             chkPositiveInt(val, rawprm)
             inv.dirs_per_dir = int(val)
+        elif prm == 'runtime':
+            chkPositiveInt(val, rawprm)
+            inv.runtime = int(val)
         elif prm == 'record-size':
             chkNonNegInt(val, rawprm)
             inv.record_sz_kb = int(val)
