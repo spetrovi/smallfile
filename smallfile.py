@@ -703,7 +703,7 @@ class SmallfileWorkload:
             if not self.test_ended():
                 self.end_test()
             return False
-        if self.runtime and self.runtime < self.start_time + time.time():
+        if self.runtime and self.runtime < time.time() - self.start_time:
             if not self.test_ended():
                 self.end_test()
             return False
